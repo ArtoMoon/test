@@ -54,6 +54,7 @@ Topla -> Envantere al -> SellPoint'te sat -> Para kazan -> Bag/Vehicle/Pet upgra
 
 - Envanter doluysa çöp **silinmez** (oyuncu önce satmak zorunda).
 - Başarıyla toplanan çöp, `TrashRespawnSeconds` sonunda geri gelir.
+- Respawn olan çöp objeleri tekrar toplanabilir.
 - Araç + pet kombinasyonu oyuncu yürüyüş hızını etkiler.
 
 - Eğer log'da `Config ModuleScript not found` görürsen, dosya adı/konumu yanlıştır.

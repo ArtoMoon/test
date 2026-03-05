@@ -331,6 +331,11 @@ local function scheduleTrashRespawn(originalPart)
     local modelTemplate = originalPart:Clone()
     modelTemplate.Parent = nil
 
+    local prompt = modelTemplate:FindFirstChildOfClass("ProximityPrompt")
+    if prompt then
+        prompt:SetAttribute("Hooked", nil)
+    end
+
     task.delay(Config.TrashRespawnSeconds, function()
         if modelTemplate then
             modelTemplate.Parent = Workspace
@@ -454,6 +459,10 @@ Players.PlayerAdded:Connect(setupPlayerState)
 Players.PlayerRemoving:Connect(function(player)
     playerData[player] = nil
 end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    setupPlayerState(player)
+end
 
 hookTrashPrompts()
 hookMainPrompts()
