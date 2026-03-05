@@ -38,4 +38,10 @@ Config.GoldenBag = {
     DurationSeconds = 30,
 }
 
+Config.AutoSetup = {
+    Enabled = true,
+    SpawnSampleTrash = true,
+    SampleTrashCount = 12,
+}
+
 return Config

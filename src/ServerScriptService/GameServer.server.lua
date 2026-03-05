@@ -25,6 +25,98 @@ if not Config then
 end
 
 local playerData = {}
+local setupFolderName = "TrashSimulator_AutoSetup"
+
+local function ensurePrompt(parent, actionText, objectText)
+    local prompt = parent:FindFirstChildOfClass("ProximityPrompt")
+    if prompt then
+        return prompt
+    end
+
+    prompt = Instance.new("ProximityPrompt")
+    prompt.ActionText = actionText
+    prompt.ObjectText = objectText
+    prompt.HoldDuration = 0.1
+    prompt.MaxActivationDistance = 10
+    prompt.RequiresLineOfSight = false
+    prompt.Parent = parent
+    return prompt
+end
+
+local function ensureMarkerPart(name, position, color, actionText, objectText)
+    local part = Workspace:FindFirstChild(name)
+    if not part then
+        part = Instance.new("Part")
+        part.Name = name
+        part.Size = Vector3.new(6, 1, 6)
+        part.Anchored = true
+        part.Position = position
+        part.Color = color
+        part.Parent = Workspace
+    end
+
+    ensurePrompt(part, actionText, objectText)
+    return part
+end
+
+local function createSampleTrash(autoFolder)
+    if autoFolder:FindFirstChild("SampleTrash_1") then
+        return
+    end
+
+    local types = { "PlasticBottle", "Can", "Cardboard", "TrashBag", "ElectronicWaste" }
+    local count = math.max(1, tonumber(Config.AutoSetup and Config.AutoSetup.SampleTrashCount) or 12)
+
+    for index = 1, count do
+        local trash = Instance.new("Part")
+        trash.Name = "SampleTrash_" .. index
+        trash.Size = Vector3.new(1.5, 1.5, 1.5)
+        trash.Anchored = true
+        trash.Material = Enum.Material.Plastic
+        trash.Color = Color3.fromRGB(40, 180, 99)
+        trash.Position = Vector3.new(-30 + (index * 3), 1, -20 + (index % 3) * 4)
+        trash:SetAttribute("TrashType", types[((index - 1) % #types) + 1])
+        trash.Parent = autoFolder
+
+        ensurePrompt(trash, "Topla", "Cop")
+        CollectionService:AddTag(trash, "Trash")
+    end
+end
+
+local function runAutoSetup()
+    if not (Config.AutoSetup and Config.AutoSetup.Enabled) then
+        return
+    end
+
+    local autoFolder = Workspace:FindFirstChild(setupFolderName)
+    if not autoFolder then
+        autoFolder = Instance.new("Folder")
+        autoFolder.Name = setupFolderName
+        autoFolder.Parent = Workspace
+    end
+
+    ensureMarkerPart("SellPoint", Vector3.new(0, 1, 0), Color3.fromRGB(52, 152, 219), "Sell Trash", "Geri Donusum")
+    ensureMarkerPart("BagUpgradePoint", Vector3.new(10, 1, 0), Color3.fromRGB(241, 196, 15), "Bag Upgrade", "Canta")
+    ensureMarkerPart("VehicleUpgradePoint", Vector3.new(20, 1, 0), Color3.fromRGB(230, 126, 34), "Vehicle Upgrade", "Arac")
+    ensureMarkerPart("PetShopPoint", Vector3.new(30, 1, 0), Color3.fromRGB(155, 89, 182), "Buy Pet", "Pet Shop")
+
+    local goldenSpawn = Workspace:FindFirstChild("GoldenBagSpawn")
+    if not goldenSpawn then
+        goldenSpawn = Instance.new("Part")
+        goldenSpawn.Name = "GoldenBagSpawn"
+        goldenSpawn.Size = Vector3.new(4, 1, 4)
+        goldenSpawn.Anchored = true
+        goldenSpawn.Position = Vector3.new(40, 1, 0)
+        goldenSpawn.Color = Color3.fromRGB(255, 215, 0)
+        goldenSpawn.Parent = Workspace
+    end
+
+    if Config.AutoSetup.SpawnSampleTrash then
+        createSampleTrash(autoFolder)
+    end
+
+    warn("[TrashSim] Auto setup tamamlandi. Workspace altinda gerekli test objeleri olusturuldu.")
+end
 
 local function getMaxCapacity(level)
     local upgrade = Config.BagUpgrades[level]
@@ -275,7 +367,7 @@ local function hookTrashPrompts()
 end
 
 local function connectPrompt(partName, callback)
-    local part = Workspace:FindFirstChild(partName)
+    local part = Workspace:FindFirstChild(partName, true)
     if not part then
         warn(partName .. " not found in Workspace")
         return
@@ -309,7 +401,7 @@ local function hookMainPrompts()
 end
 
 local function spawnGoldenBag()
-    local spawnPoint = Workspace:FindFirstChild("GoldenBagSpawn")
+    local spawnPoint = Workspace:FindFirstChild("GoldenBagSpawn", true)
     if not spawnPoint then
         warn("GoldenBagSpawn not found in Workspace")
         return
@@ -348,6 +440,8 @@ local function spawnGoldenBag()
         end
     end)
 end
+
+runAutoSetup()
 
 task.spawn(function()
     while true do

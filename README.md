@@ -38,6 +38,14 @@ Bu repo, Roblox Studio içinde hızlıca kurulabilecek geliştirilmiş bir **ç�
    - `Laptop`
    - `Phone`
 
+## Hızlı Test (Otomatik Kurulum)
+
+- `Config.AutoSetup.Enabled = true` ise script ilk çalışmada test için gerekli noktaları otomatik oluşturur:
+  - `SellPoint`, `BagUpgradePoint`, `VehicleUpgradePoint`, `PetShopPoint`, `GoldenBagSpawn`
+- `Config.AutoSetup.SpawnSampleTrash = true` ise örnek çöp objeleri de üretir ve `Trash` tag'i verir.
+- Kendi haritanı kurmaya başladığında bu modu kapatabilirsin:
+  - `Config.AutoSetup.Enabled = false`
+
 ## Oyun Döngüsü
 
 Topla -> Envantere al -> SellPoint'te sat -> Para kazan -> Bag/Vehicle/Pet upgrade al -> daha hızlı ve kârlı farm.
